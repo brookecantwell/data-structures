@@ -1,0 +1,484 @@
+Script started on Sun 23 Oct 2016 03:23:04 PM EDT
+]0;brookecantwell@storm:~/CISC2200/HW5[brookecantwell@storm HW5]$ cat stack.h
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #5
+ *
+ */
+
+#ifndef STACK_H
+#define STACK_H
+
+#include <iostream>
+
+using namespace std;
+
+struct coordinates
+{
+   int row, col;
+};
+
+class Stack
+{
+   friend istream& operator>>(istream&, Stack&);
+   friend ostream& operator<<(ostream&, Stack);
+
+   public:
+      Stack( );
+      ~Stack( ) { }
+      int stack_size( );
+      bool is_empty( );
+      bool is_full( );
+      coordinates top( );
+      coordinates pop( );
+      coordinates push(coordinates element);
+      coordinates first( );
+      void print( );
+   protected:
+      int recursive_solve(int, int);
+      void input(istream&);
+      void output(ostream&);
+      static const int SIZE = 20;
+      int current_size;
+      coordinates data[SIZE];
+};
+
+#endif
+]0;brookecantwell@storm:~/CISC2200/HW5[brookecantwell@storm HW5]$ cat stack.cpp
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #5
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include "stack.h"
+
+using namespace std;
+
+Stack::Stack( )
+{
+   current_size = -1;
+}
+
+int Stack::stack_size( )
+{
+   return(current_size + 1);
+}
+
+bool Stack::is_empty( )
+{
+   if (current_size == -1)
+      return 1;
+   else
+      return 0;
+}
+
+bool Stack::is_full( )
+{
+   if (current_size == SIZE)
+      return 1;
+   else
+      return 0;
+}
+
+coordinates Stack::top( )
+{
+   return(data[current_size]);
+}
+
+coordinates Stack::first( )
+{
+   return(data[0]);
+}
+
+coordinates Stack::pop( )
+{
+   coordinates stack_element;
+   if (!is_empty( ))
+   {
+      stack_element = data[current_size];
+      current_size = current_size - 1;
+      return stack_element;
+   }
+   else
+      printf("Could not return data. Stack is empty\n.");
+}
+
+coordinates Stack::push(coordinates stack_element)
+{
+   if (!is_full( ))
+   {
+      current_size = current_size + 1;
+      data[current_size] = stack_element;
+   }
+   else
+      printf("Could not insert data. Stack is full.\n");
+}
+
+void Stack::print( )
+{
+   for (int i = current_size; i >= 0; --i)
+      cout << "(" << data[i].row << ", " << data[i].col << ")\n";
+}
+]0;brookecantwell@storm:~/CISC2200/HW5[brookecantwell@storm HW5]$ cat maze.h
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #5
+ *
+ * Maze Class Header File
+ *
+ */
+
+#ifndef MAZE_H
+#define MAZE_H
+
+#include <iostream>
+#include "stack.h"
+
+using namespace std;
+
+class Maze 
+{
+   //global functions
+   //operator overload functions
+   friend istream& operator>>(istream&, Maze&);
+   friend ostream& operator<<(ostream&, Maze);
+
+   public:
+      void set_character(char, int, int);
+      int solve(int, int);
+   protected:
+      int recursive_solve(int, int); 
+      void input(istream&);
+      void output(ostream&);
+      static const int SIZE = 10;
+      char Cells[SIZE][SIZE];
+      Stack stack_data;
+};
+
+#endif
+]0;brookecantwell@storm:~/CISC2200/HW5[brookecantwell@storm HW5]$ cat maze.cpp
+/*
+ * Brooke Cantwell
+ *
+ * CISC2200 Data Structures
+ *
+ * Maze Class Implementation File
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <stdio.h>
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <vector>
+#include "maze.h"
+
+using namespace std;
+
+//GLOBAL METHODS
+
+//operator overload methods for input & output
+
+istream& operator>>(istream&in, Maze&m)
+{
+   m.input(in);
+   return(in);
+}
+
+ostream& operator<<(ostream&out, Maze m)
+{
+   m.output(out);
+   return(out);
+}
+
+//intput and output methods
+void  Maze::input(istream&in)
+{
+   int row, col;
+   
+
+   for (row = 0; row < SIZE; row++) 
+   {
+      for (col = 0; col < SIZE; col++)
+         in >> Cells[row][col];
+   }
+}
+
+void Maze::output(ostream&out)
+{
+   #define LARGE_SQUARE "\u25A0";
+   #define SMALL_SQUARE "\u25AB";
+   #define TRIANGLE "\u25B2";
+   #define BLANK " ";
+   #define FOOTPRINT "\u25CB";
+   #define RIGHT "\u2192";
+   #define LEFT "\u2190";
+   #define DOWN "\u2193";
+   #define UP "\u2191";
+
+   int row, col;
+   char var;
+
+   cout << setw(3) << " ";
+
+   for (int i = 0; i < SIZE; i++)
+      cout << left << setw(3) << i;
+
+   cout << endl;
+
+   for (row = 0; row < SIZE; row++)
+   {
+      cout << setw(3) << row ;
+
+      for (col = 0; col < SIZE; col++) {
+         var = Cells[row][col];
+         switch(var)
+         {
+            case 'n':
+               cout << setw(5) << BLANK;
+               break;
+            case 'w':
+               cout << setw(5) << LARGE_SQUARE;
+               break;
+            case 's':
+               cout << setw(5) << SMALL_SQUARE;
+               break;
+            case 't': //entry & exit (at beginning)
+            case 'o': //entry after being reset
+               cout << setw(5) << TRIANGLE;
+               break;
+            case 'f':
+               cout << setw(5) << FOOTPRINT;
+               break;
+            case 'U':
+               cout << setw(5) << UP;
+               break;
+            case 'D':
+               cout << setw(5) << DOWN;
+               break;
+            case 'L':
+               cout << setw(5) << LEFT;
+               break;
+            case 'R':
+               cout << setw(5) << RIGHT;
+               break;
+         }
+
+      }
+   cout << endl;
+   }
+}
+
+//set_character( ) method, used to differentiate
+//the maze entrance from exit after user input
+//for enterance coordinates
+void Maze::set_character(char c, int x, int y)
+{
+   Cells[x][y] = c;   
+}
+
+//wrapper method for recursive_solve( ) method
+int Maze::solve(int x, int y)
+{
+   int success;
+
+   success = recursive_solve(x, y);
+ 
+   coordinates temp = stack_data.first( );
+
+   //mark the last spot visitied if it is successful
+   //with a triangle isntead of a footprint
+   if (success > 0)
+   {
+      Cells[temp.row][temp.col] = 't';
+      stack_data.print( );
+   }
+
+}
+
+//recursive_solve( ) method, finds maze path
+int Maze::recursive_solve(int x, int y)
+{
+   int success = 0;
+   coordinates local_data;   
+
+   switch(Cells[x][y])
+   {
+      case 't': //exit
+         success = 1;
+         break;
+      case 'w': //wall
+         success = 0;
+         break;
+      case 'o':
+         if (x == 0)
+            success = recursive_solve(x + 1, y) || recursive_solve(x + 1, y + 1) || recursive_solve(x + 1, y - 1);
+         else
+         if (x == SIZE - 1)
+            success = recursive_solve(x - 1, y) || recursive_solve(x - 1, y + 1) || recursive_solve(x - 1, y - 1);
+         if (y == 0)
+            success = recursive_solve(x, y + 1) || recursive_solve(x + 1, y + 1) || recursive_solve(x - 1, y + 1);
+         else
+         if (y == SIZE - 1)
+            success = recursive_solve(x, y - 1) || recursive_solve(x + 1, y - 1) || recursive_solve(x - 1, y - 1);
+         break;
+      case 'f': //footprint
+         success = 0;
+         break;
+      default:
+
+         Cells[x][y] = 'f'; //footprint
+
+         success = recursive_solve(x + 1, y) || recursive_solve(x - 1, y) || recursive_solve(x, y + 1) || recursive_solve(x, y - 1);
+         break;
+
+   }
+
+
+   //determine direction and push new coordinate to the stack
+   if (success > 0)
+   {
+      coordinates temp = stack_data.top( );
+      
+      local_data.row = x;
+      local_data.col = y;
+
+      stack_data.push(local_data);
+
+      if (local_data.row > temp.row)
+         Cells[x][y] = 'U';
+      else
+      if (local_data.row < temp.row)
+         Cells[x][y] = 'D';
+      else
+      if (local_data.col > temp.col)
+         Cells[x][y] = 'L';
+      else
+      if (local_data.col < temp.col)
+         Cells[x][y] = 'R';
+
+   }
+
+   return(success);
+
+}
+]0;brookecantwell@storm:~/CISC2200/HW5[brookecantwell@storm HW5]$ cat labirynth.cpp
+/*
+ * Brooke Cantwell
+ *
+ * CISC2200 Data Structures
+ *
+ * Homework #5
+ *
+ * Driver
+ *
+ *
+ */
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <iomanip>
+#include "maze.h"
+
+using namespace std;
+
+//global variables
+const int SIZE = 10;
+const char SENTINEL = 0;
+
+//function prototypes
+bool read_maze(int&, int&, Maze&);
+void print_vector(vector<vector<char>>);
+
+main( ) 
+{
+
+   //local variables
+   Maze this_maze;
+   vector <vector<char>> v;	
+   int x, y;
+   bool file_open = false;
+   int success = 0;
+
+   //open and read from file, if there is an error
+   //opening the file, prompt the user to input
+   //the file name again
+   while(!file_open)
+      file_open = read_maze(x, y, this_maze);
+
+
+   while (success < 1)
+      success = this_maze.solve(x, y);
+
+   //output
+   cout << endl << "Labirynth:" << endl;  
+   cout << this_maze << endl;
+
+}
+
+//get data file name, open and read from data file, and get
+//starting coordinates, return false if file does not open
+bool read_maze(int&x, int&y, Maze&this_maze)
+{
+   string file_name;
+   char c;
+   bool file_open;
+
+   cout << "Enter file name: ";
+   cin >> file_name;
+
+   ifstream data_file(file_name);
+
+   //if file doesn't open display error message
+   //and set file_open to false
+   if (!data_file.is_open( ))
+   {
+      cout << "Error opening file." << endl;
+      file_open = false;
+   }
+   //if the file is open, read in data, get
+   //user input for entry point, and make sure
+   //user input values do not exceed the size
+   else
+   {
+      file_open = true;  
+      data_file >> this_maze;
+      data_file.close( );
+
+      cout << this_maze << endl;
+
+      do 
+      {
+         cout << "Enter entry point coordinates in the form x,y: ";
+         cin >> x >> c >> y;
+      } while (x > SIZE || y > SIZE);
+
+      //set entrance to a different character to prevent the
+      //program from falsely thinking it's reached the exit
+      this_maze.set_character('o', x, y);   
+
+   }
+
+   return(file_open);
+}
+]0;brookecantwell@storm:~/CISC2200/HW5[brookecantwell@storm HW5]$ exit
+exit
+
+Script done on Sun 23 Oct 2016 03:23:26 PM EDT

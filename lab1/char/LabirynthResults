@@ -1,0 +1,162 @@
+Script started on Mon 19 Sep 2016 01:46:55 PM EDT
+]0;brookecantwell@storm:~/CISC2200/lab1/char[brookecantwell@storm char]$ cat driver.cpp
+/*
+ * Brooke Cantwell
+ *
+ * CISC2200 Data Structures
+ *
+ * Lab #1
+ *
+ * 12 September 2016
+ *
+ */
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <iomanip>
+
+using namespace std;
+
+const int SIZE = 10;
+const char SENTINAL = 0;
+
+void printVector(vector<vector<char>>);
+string getString(char);
+void printArray(char arr[ ][SIZE]);
+void fillVector(vector<vector<char>>);
+void fillLabirynth(vector<vector<char>>, char arr[ ][SIZE]);
+
+main( ) {
+
+   char n;
+   string line;
+   stringstream ss;
+   ifstream myFile("step-1.dat");
+   char arr[SIZE][SIZE] = {{SENTINAL}};
+   vector <vector<char>> vec;	
+
+   if (!myFile.is_open( ))
+      cout << "Error opening file." << endl;
+   else {
+      while (getline(myFile, line)) {
+         vector<char> row;
+         ss.clear( );
+         ss.str(" ");
+         ss << line;
+         while (ss >> n)	
+            row.push_back(n);
+         vec.push_back(row);
+      } 
+   }
+
+   myFile.close( );
+
+
+   cout << "Print Array:" << endl;
+   printArray(arr);
+
+   cout << "Print Vector:" << endl;
+   printVector(vec); 
+
+   fillLabirynth(vec, arr);
+
+   cout << endl << "Print Labirynt:" << endl;  
+   printArray(arr);
+
+}
+
+void printVector(vector<vector<char>> v) {
+   for (int row = 0; row < v.size( ); row++) {
+      for (int col = 0; col < v[row].size( ); col++)
+         cout << setw(3) << v[row][col];
+   cout << endl;
+   }
+}
+
+string getString(char c) {
+   string displayString;
+
+   switch(c) {
+      case 'n':
+         displayString = " ";
+         break;
+      case 'w':
+         displayString = "\u25A0";
+         break;
+      case 's':
+         displayString = "\u25AB";
+         break;
+      case 't':
+         displayString = "\u25B2";
+         break;
+   }
+
+   return(displayString);
+}
+
+void printArray(char arr[ ][SIZE]) {
+   for (int row = 0; row < SIZE; row++) {
+      for (int col = 0; col < SIZE; col++) {
+         string displayString = getString(arr[row][col]);
+         cout << setw(5) << displayString;
+      }
+      cout << endl;
+   }
+   cout << endl;
+}
+
+void fillVector(vector <vector<char>> v) {
+   for (int row = 0; row < v.size( ); row++) {
+      for (int col = 0; col < v[row].size( ); col++)
+         v[row][col] = SENTINAL;
+   }
+}
+
+void fillLabirynth(vector <vector<char>> v, char arr[ ][SIZE]) {
+   for (int i = 0; i < v.size( ); i++) {
+   
+      int lineSize = v[i].size( );
+      int spaces = (SIZE - lineSize) / 2;
+
+      for (int j = 0; j < v[i].size( ); j++)
+         arr[i][j+spaces] = v[i][j];
+   }
+}
+]0;brookecantwell@storm:~/CISC2200/lab1/char[brookecantwell@storm char]$ g++ driver.cpp
+]0;brookecantwell@storm:~/CISC2200/lab1/char[brookecantwell@storm char]$ ./a.out
+Print Array:
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+
+Print Vector:
+  w  w  w  w  t  w  w  w
+  w  w  w  s  s  w  w  w
+  w  w  s  s  w  w  w  w
+
+Print Labirynt:
+       ■  ■  ■  ■  ▲  ■  ■  ■     
+       ■  ■  ■  ▫  ▫  ■  ■  ■     
+       ■  ■  ▫  ▫  ■  ■  ■  ■     
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+
+]0;brookecantwell@storm:~/CISC2200/lab1/char[brookecantwell@storm char]$ exit
+exit
+
+Script done on Mon 19 Sep 2016 01:47:18 PM EDT
