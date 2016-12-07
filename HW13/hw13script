@@ -1,0 +1,363 @@
+Script started on Mon 05 Dec 2016 03:32:36 PM EST
+]0;brookecantwell@storm:~/CISC2200/HW13[brookecantwell@storm HW13]$ cat stack-template.h
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #13
+ *
+ * 5 December 2016
+ *
+ */
+
+#ifndef STACK_H
+#define STACK_H
+
+#include <iostream>
+#include <iomanip>
+#include <cstdlib>
+#include <stdio.h>
+
+using namespace std;
+
+template <class T>
+class Stack
+{
+   public:
+      Stack( )
+      {
+         T *data = NULL;
+         max_size = 0;
+         stack_top_index = -1;
+      }
+      ~Stack( )
+      {
+      }
+      void initialize_stack(int size)
+      {
+         T *new_data;
+         new_data = (T*)malloc(sizeof(T) * size);
+         if (new_data == NULL)
+         {
+            cerr << "Insufficient memory to initialize stack." << endl;
+            exit(1);
+         }
+         data = new_data;
+         max_size = size;
+         stack_top_index = -1;
+      }
+      void destroy_stack( )
+      {
+         free(data);
+         data = NULL;
+         max_size = 0;
+         stack_top_index = -1;
+      }
+      void push(T element)
+      {
+         if (is_full( ))
+         {
+            cerr << "Can't push on stack, it is full." << endl;
+            exit(1);
+         }
+         data[++stack_top_index] = element;
+      }
+      T pop( )
+      {
+         if (is_empty( ))
+         {
+            cerr << "Can't pop from stack, it is empty." << endl;
+            exit(1);
+         }
+         return (data[stack_top_index--]);
+      }
+      int is_empty( )
+      {
+         return (stack_top_index < 0);
+      }
+      int is_full( )
+      {
+         //conditional statement prevents is_full from returning
+         //true when the max_size is 0 and the stack_top_index
+         //is -1
+         if (max_size == 0)
+            return max_size;
+         else
+            return(stack_top_index >= max_size - 1);
+      }
+   private:
+      T *data;
+      int max_size;
+      int stack_top_index;
+};
+
+#endif
+]0;brookecantwell@storm:~/CISC2200/HW13[brookecantwell@storm HW13]$ cat stack-template-driver.cpp
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #13
+ *
+ * 5 December 2016
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <cstdlib>
+#include <stdio.h>
+#include "stack-template.h"
+
+using namespace std;
+
+unsigned int seed = 7;
+
+double random(unsigned int&);
+
+typedef struct
+{
+   double x, y;
+} point;
+
+main( )
+{
+   int i;
+   char ch;
+   point p;
+   Stack<point> s;
+
+   cout << "is_empty = " << s.is_empty( ) << endl;
+   cout << "is_full = " << s.is_full( ) << endl;
+
+   s.initialize_stack(10);
+
+   cout << endl << "is_empty = " << s.is_empty( ) << endl;
+   cout << "is_full = " << s.is_full( ) << endl << endl;
+
+   cout << fixed << right << setprecision(3);
+
+   i = 0;
+   cout << "Pushing points to the stack:" << endl;
+   while (!s.is_full( ))
+   {
+      cout << setw(3) << ++ i << ". ";
+      p.x = random(seed);
+      p.y = random(seed);
+      cout << "p.x = " << setw(5) << p.x << ' ';
+      cout << "p.y = " << setw(5) << p.y;
+      cout << endl;
+      s.push(p);
+   }
+
+   i = 0;
+   cout << endl << "Popping points from the stack: " << endl;
+   while(!s.is_empty( ))
+   {
+      cout << setw(3) << ++i << ". ";
+      p = s.pop( );
+      cout << "p.x = " << setw(5) << p.x << ' ';
+      cout << "p.y = " << setw(5) << p.y;
+      cout << endl;
+   }
+}
+
+double random(unsigned int&seed)
+{
+   const int MODULUS = 15749;
+   const int MULTIPLIER = 69069;
+   const int INCREMENT = 1;
+   seed = ((MULTIPLIER * seed) + INCREMENT) % MODULUS;
+   return (double) seed / (double) MODULUS;
+}
+]0;brookecantwell@storm:~/CISC2200/HW13[brookecantwell@storm HW13]$ cat stack-template-driver-2.cpp
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #13
+ *
+ * 5 December 2016
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <cstdlib>
+#include <stdio.h>
+#include "stack-template.h"
+
+using namespace std;
+
+unsigned int seed = 7;
+
+double random(unsigned int&);
+
+template <typename T>
+void print_stack(Stack<T> s)
+{
+   T element;
+   int i = 0;
+   while (!s.is_empty( ))
+   {
+      element = s.pop( );
+      cout << element << ' ';
+   }
+   cout << endl;
+}
+
+template <typename T>
+void test_stack(Stack<T> s)
+{
+   cout << "is_empty = " << s.is_empty( ) << endl;
+   cout << "is_full = " << s.is_full( ) << endl;
+   cout << endl;
+}
+
+main( )
+{
+   Stack<int> int_stack;
+   Stack<char> char_stack;
+   int i;
+
+   cout << "Test stacks:" << endl;
+   cout << "int_stack" << endl;
+   test_stack(int_stack);
+   cout << "char_stack" << endl;
+   test_stack(char_stack);
+
+   int_stack.initialize_stack(10);
+   char_stack.initialize_stack(10);
+
+   cout << fixed << right << setprecision(3);
+
+   i = 0;
+   cout << "Pushing integers to the stack:" << endl;
+   while (!int_stack.is_full( ))
+   {
+      int random_int = int(1 + 10 * random(seed));
+      cout << random_int << ' ';
+      int_stack.push(random_int);
+   }
+   
+
+   i = 0;
+   cout << "Pushing characters to the stack:" << endl;
+   while (!char_stack.is_full( ))
+   {
+      char random_char = char('a' + 25 * random(seed));
+      cout << random_char << ' ';
+      char_stack.push(random_char);
+   }
+
+   cout << endl << endl << "Test stacks:" << endl;
+   cout << "int_stack" << endl;
+   test_stack(int_stack);
+   cout << "char_stack" << endl;
+   test_stack(char_stack);
+   cout << endl;
+
+   cout << "Popping elements from the stacks using templated function" << endl;
+   cout << "Integer stack:" << endl;
+   print_stack(int_stack);
+   cout << "Character stack:" << endl;
+   print_stack(char_stack);
+
+   cout << endl << "Destroy stacks:" << endl;
+   int_stack.destroy_stack( );
+   char_stack.destroy_stack( );
+
+   cout << endl << "Test stacks:"<< endl;
+   cout << "int stack" << endl;
+   test_stack(int_stack);
+   cout << "char stack" << endl;
+   test_stack(char_stack);
+}
+double random(unsigned int&seed)
+{
+   const int MODULUS = 15749;
+   const int MULTIPLIER = 69069;
+   const int INCREMENT = 1;
+   seed = ((MULTIPLIER * seed) + INCREMENT) % MODULUS;
+   return (double) seed / (double) MODULUS;
+}
+]0;brookecantwell@storm:~/CISC2200/HW13[brookecantwell@storm HW13]$ g++ stack-template-driver.cpp
+]0;brookecantwell@storm:~/CISC2200/HW13[brookecantwell@storm HW13]$ ./a.out
+is_empty = 1
+is_full = 0
+
+is_empty = 1
+is_full = 0
+
+Pushing points to the stack:
+  1. p.x = 0.699 p.y = 0.128
+  2. p.x = 0.936 p.y = 0.532
+  3. p.x = 0.812 p.y = 0.903
+  4. p.x = 0.014 p.y = 0.220
+  5. p.x = 0.687 p.y = 0.248
+  6. p.x = 0.886 p.y = 0.827
+  7. p.x = 0.822 p.y = 0.058
+  8. p.x = 0.992 p.y = 0.485
+  9. p.x = 0.917 p.y = 0.548
+ 10. p.x = 0.444 p.y = 0.354
+
+Popping points from the stack: 
+  1. p.x = 0.444 p.y = 0.354
+  2. p.x = 0.917 p.y = 0.548
+  3. p.x = 0.992 p.y = 0.485
+  4. p.x = 0.822 p.y = 0.058
+  5. p.x = 0.886 p.y = 0.827
+  6. p.x = 0.687 p.y = 0.248
+  7. p.x = 0.014 p.y = 0.220
+  8. p.x = 0.812 p.y = 0.903
+  9. p.x = 0.936 p.y = 0.532
+ 10. p.x = 0.699 p.y = 0.128
+]0;brookecantwell@storm:~/CISC2200/HW13[brookecantwell@storm HW13]$ g++ stack-template-driver-2.cpp
+]0;brookecantwell@storm:~/CISC2200/HW13[brookecantwell@storm HW13]$ ./a.out
+Test stacks:
+int_stack
+is_empty = 1
+is_full = 0
+
+char_stack
+is_empty = 1
+is_full = 0
+
+Pushing integers to the stack:
+7 2 10 6 9 10 1 3 7 3 Pushing characters to the stack:
+w u u b y m w n l i 
+
+Test stacks:
+int_stack
+is_empty = 0
+is_full = 1
+
+char_stack
+is_empty = 0
+is_full = 1
+
+
+Popping elements from the stacks using templated function
+Integer stack:
+3 7 3 1 10 9 6 10 2 7 
+Character stack:
+i l n w m y b u u w 
+
+Destroy stacks:
+
+Test stacks:
+int stack
+is_empty = 1
+is_full = 0
+
+char stack
+is_empty = 1
+is_full = 0
+
+]0;brookecantwell@storm:~/CISC2200/HW13[brookecantwell@storm HW13]$ exit
+exit
+
+Script done on Mon 05 Dec 2016 03:33:36 PM EST

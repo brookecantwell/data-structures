@@ -38,7 +38,7 @@ class Stack
    protected:
       void input(istream&);
       void output(ostream&);
-      static const int SIZE = 20;
+      static const int SIZE = 30;
       int current_size;
       coordinates data[SIZE];
 };

@@ -73,7 +73,8 @@ void Maze::output(ostream&out)
    {
       cout << setw(3) << row ;
 
-      for (col = 0; col < SIZE; col++) {
+      for (col = 0; col < SIZE; col++) 
+      {
          var = Cells[row][col];
          switch(var)
          {

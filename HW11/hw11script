@@ -1,0 +1,161 @@
+Script started on Mon 21 Nov 2016 03:04:14 PM EST
+]0;brookecantwell@storm:~/CISC2200/HW11[brookecantwell@storm HW11]$ cat stack-4.h
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * 21 November 2016
+ *
+ * HW #11
+ *
+ * Stack implementation #4
+ *
+ * NOTE: There is a  problem in the get_c_string( )
+ * and elements are not being returned correctly.
+ *
+ */
+
+#ifndef STACK_H
+#define STACK_H
+
+typedef char stack_element;
+
+typedef struct
+{
+   stack_element *data;
+   int max_size;
+   int stack_top_index;
+} Stack;
+
+void initialize_stack(Stack *stack_pointer, int max_size);
+void destroy_stack(Stack *stack_pointer);
+void push(Stack *stack_pointer, stack_element element);
+stack_element pop(Stack *stack_pointer);
+bool is_Empty(Stack *stack_pointer);
+bool is_full(Stack *stack_pointer);
+
+#endif
+]0;brookecantwell@storm:~/CISC2200/HW11[brookecantwell@storm HW11]$ cat stack-4.cpp
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * HW #11
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <stdio.h>
+#include <stdlib.h>
+#include "stack-4.h"
+
+using namespace std;
+
+void initialize_stack(Stack *stack_pointer, int max_size)
+{
+   stack_element *new_data;
+   new_data = (stack_element*)malloc(sizeof(stack_element) * max_size);
+   if (stack_pointer == NULL)
+   {
+      cerr << "Insufficient memory to initialize stack." << endl;
+      exit(1);
+   }
+   stack_pointer -> data = new_data;
+   stack_pointer -> max_size = max_size;
+   stack_pointer -> stack_top_index = -1;
+}
+
+void destroy_stack(Stack *stack_pointer)
+{
+   free(stack_pointer -> data);
+   stack_pointer -> data = NULL;
+   stack_pointer -> max_size = 0;
+   stack_pointer -> stack_top_index = -1;
+}
+
+void push(Stack *stack_pointer, stack_element element)
+{
+   if (is_full(stack_pointer))
+   {
+      cerr << "Can't push on stack (stack is full)." << endl;
+      exit(1);
+   }
+   stack_pointer -> data[++stack_pointer -> stack_top_index] = element;
+}
+
+stack_element pop(Stack *stack_pointer)
+{
+   if(is_Empty(stack_pointer))
+   {
+      cerr << "Can't pop from stack (stack is empty)." << endl;
+      exit(1);
+   }
+   return(stack_pointer -> data[stack_pointer -> stack_top_index--]);
+}
+
+bool is_Empty(Stack *stack_pointer)
+{
+   return(stack_pointer -> stack_top_index < 0);
+}
+
+bool is_full(Stack *stack_pointer)
+{
+   return(stack_pointer -> stack_top_index >= stack_pointer -> max_size);
+}
+]0;brookecantwell@storm:~/CISC2200/HW11[brookecantwell@storm HW11]$ cat stack-4-driver.cpp
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * 21 November 2016
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <stdio.h>
+#include <string.h>
+#include "stack-4.h"
+
+using namespace std;
+
+const char* get_c_string( );
+
+main( )
+{
+   Stack stack_1;
+   const char *traverse;
+   const char *user_string;
+   
+   cout << setw(13) << "Enter a string: ";
+   user_string = get_c_string( );
+
+   cout << "User String: " << *user_string << endl;
+
+   initialize_stack(&stack_1, strlen(user_string));
+  
+   for (traverse = user_string; *traverse != '\0'; traverse++)
+      push(&stack_1, *traverse);
+
+   cout << "Popped characters are: ";
+   while (!is_Empty(&stack_1));
+      cout << setw(2) << pop(&stack_1);
+ 
+   destroy_stack(&stack_1);
+}
+
+const char *get_c_string( )
+{
+   string str;
+   getline(cin, str);
+   const char *s = str.c_str( );
+   return s;
+}
+]0;brookecantwell@storm:~/CISC2200/HW11[brookecantwell@storm HW11]$ exit
+exit
+
+Script done on Mon 21 Nov 2016 03:04:36 PM EST

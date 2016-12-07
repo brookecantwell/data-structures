@@ -1,0 +1,120 @@
+Script started on Mon 21 Nov 2016 04:45:59 PM EST
+]0;brookecantwell@storm:~/CISC2200/QUIZ3[brookecantwell@storm QUIZ3]$ cat driver.cpp
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Quiz #3
+ *
+ * 21 November 2016
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <stdio.h>
+#include <assert.h>
+#include <ctime>
+
+using namespace std;
+
+struct structure;
+typedef structure *structure_pointer;
+struct structure
+{
+   int data;
+   structure_pointer next;
+};
+
+unsigned int seed = (unsigned int) time(0);
+const int SIZE = 10;
+
+double random(unsigned int&);
+structure_pointer create_structure(int);
+void link_structures(structure_pointer&, structure_pointer);
+void display_list(structure_pointer);
+void print_reverse(structure_pointer);
+
+main( )
+{
+   int head_value = int (1 + 10 * random(seed));
+   int random_integer;
+
+   structure_pointer head = create_structure(head_value);
+
+   for (int i = 0; i < SIZE - 1; i++)
+   {
+      random_integer = int (1 + 10 * random(seed));
+      structure_pointer temp_ptr = create_structure(random_integer);    
+      link_structures(head, temp_ptr);
+   } 
+
+   cout << "Original List:" << endl;
+   display_list(head); 
+
+   cout << endl << "Reversed:" << endl;
+   print_reverse(head);
+
+   cout << endl;
+}
+
+double random(unsigned int&seed)
+{
+   const int MODULUS = 15748;
+   const int MULTIPLIER = 69069;
+   const int INCREMENT = 1;
+
+   seed = ((MULTIPLIER * seed) + INCREMENT) % MODULUS;
+   return double(seed) / double(MODULUS);
+}
+
+structure_pointer create_structure(int n)
+{
+   structure_pointer p = new structure;
+   p -> data = n;
+   p -> next = NULL;
+}
+
+void link_structures(structure_pointer&head, structure_pointer p)
+{
+   structure_pointer curr;
+   curr = head;
+   if (curr == NULL)
+      head = p;
+   else
+   {
+      while (curr -> next != NULL)
+         curr = curr -> next;
+      curr -> next = p;
+   }
+}
+
+void display_list(structure_pointer head)
+{
+   structure_pointer p = head;
+   int count = 0;
+   while (p != NULL)
+   {
+      count++;
+      cout << left << setw(7) << "Node #" << count;
+      cout << "\tData: " << p -> data << endl;
+      p = p -> next;
+   }
+}
+
+void print_reverse(structure_pointer head)
+{
+   structure_pointer p = head;
+
+   if (p == NULL)
+      return;
+
+   print_reverse(p -> next);
+
+   cout << setw(4) << p -> data;
+}
+]0;brookecantwell@storm:~/CISC2200/QUIZ3[brookecantwell@storm QUIZ3]$ exit
+exit
+
+Script done on Mon 21 Nov 2016 04:46:56 PM EST

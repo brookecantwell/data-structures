@@ -1,0 +1,181 @@
+Script started on Thu 01 Dec 2016 02:41:25 PM EST
+]0;brookecantwell@storm:~/CISC2200/HW12[brookecantwell@storm HW12]$ cat stack-5.h
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #12
+ *
+ * 1 December 2016
+ *
+ */
+
+#ifndef STACK_H
+#define STACK_H
+
+typedef char stack_element;
+
+class Stack
+{
+   public:
+      Stack( );
+      void initialize_stack(int);
+      void destroy_stack( );
+      stack_element pop( );
+      stack_element top_stack( );
+      void push(stack_element);
+      int is_empty( );
+      int is_full( );
+   private:
+      stack_element *data;
+      int max_size;
+      int stack_top_index;
+};
+
+#endif
+]0;brookecantwell@storm:~/CISC2200/HW12[brookecantwell@storm HW12]$ cat stack-5.cpp
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #12
+ *
+ * 1 December 2016
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <stdio.h>
+#include <stdlib.h>
+#include "stack-5.h"
+
+using namespace std;
+
+Stack::Stack( )
+{
+   data = NULL;
+   max_size = 0;
+   stack_top_index = -1;
+}
+
+void Stack::initialize_stack(int size)
+{
+   stack_element *new_data;
+   new_data = (stack_element*)malloc(sizeof(stack_element) * size);
+   if (new_data == NULL)
+   {
+      cerr << "Insufficient memory." << endl;
+      exit(1);
+   }
+   data = new_data;
+   max_size = size;
+   stack_top_index = -1;
+}
+
+void Stack::destroy_stack( )
+{
+   free(data);
+   data = NULL;
+   max_size = 0;
+   stack_top_index = -1;
+}
+
+void Stack::push(stack_element element)
+{
+   if (is_full( ))
+   {
+      cerr << "Stack is full, can't push element." << endl;
+      exit(1);
+   }
+   data[++stack_top_index] = element;
+}
+
+stack_element Stack::pop( )
+{
+   if (is_empty( ))
+   {
+      cerr << "Can't pop, stack is empty." << endl;
+      exit(1);
+   }
+   return data[stack_top_index--];
+}
+
+stack_element Stack::top_stack( )
+{
+   if (is_empty( ))
+   {
+      cerr << "Can't access top element, stack is empty." << endl;
+      exit(1);
+   }
+   return data[stack_top_index];
+}
+
+int Stack::is_empty( )
+{
+   return(stack_top_index < 0);
+}
+
+int Stack::is_full( )
+{
+   return(stack_top_index >= max_size - 1);
+}
+]0;brookecantwell@storm:~/CISC2200/HW12[brookecantwell@storm HW12]$ cat driver.cpp
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #12
+ *
+ * 1 December 2016
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <cstdlib>
+#include <stdio.h>
+#include <assert.h>
+#include <string.h>
+#include "stack-5.h"
+
+using namespace std;
+
+main( )
+{
+   Stack s_1;
+   const char *traverse;
+   const char *user_string;
+   string original_string;
+
+   cout << "Enter string: ";
+   getline(cin, original_string);
+
+   user_string = original_string.c_str( );
+
+   s_1.initialize_stack(strlen(user_string));
+
+   for (traverse = user_string; *traverse != '\0'; traverse++)
+      s_1.push(*traverse);
+
+   cout << "Top element of the stack: " << s_1.top_stack( ) << endl; 
+
+   cout << "Characters printed using pop function: ";
+   while (!s_1.is_empty( ))
+      cout << setw(3) << s_1.pop( );
+   cout << endl;
+
+   s_1.destroy_stack( );
+}
+]0;brookecantwell@storm:~/CISC2200/HW12[brookecantwell@storm HW12]$ g++ stack-5.cpp s[Kdrov[K[Kiver.cpp
+]0;brookecantwell@storm:~/CISC2200/HW12[brookecantwell@storm HW12]$ ./a.out
+Enter string: Brooke
+Top element of the stack: e
+Characters printed using pop function:   e  k  o  o  r  B
+]0;brookecantwell@storm:~/CISC2200/HW12[brookecantwell@storm HW12]$ exit
+exit
+
+Script done on Thu 01 Dec 2016 02:42:02 PM EST

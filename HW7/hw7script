@@ -1,0 +1,216 @@
+Script started on Mon 31 Oct 2016 03:07:27 PM EDT
+]0;brookecantwell@storm:~/CISC2200/HW7[brookecantwell@storm HW7]$ cat watch.h
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #7
+ *
+ * 31 October 2016
+ *
+ * Declare and populate a 1D vector in
+ * 3 substantially different ways and 
+ * measure which is the most efficient
+ * / takes the shortest time.
+ *
+ */
+
+#undef WATCH_H
+#ifndef WATCH_H
+#define WATCH_H
+
+#include <time.h>
+
+class Watch
+{
+   public:
+      Watch( );
+      void start( );
+      void stop( );
+      void delay(int);
+      double seconds( );
+      double minutes( );
+      double hours( );
+   private:
+      clock_t ticks_passed;
+};
+
+#endif
+]0;brookecantwell@storm:~/CISC2200/HW7[brookecantwell@storm HW7]$ cat watch.cpp
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #7
+ *
+ * 31 October 2016
+ *
+ */
+
+#include <iostream>
+#include <cstdlib>
+#include <time.h>
+#include "watch.h"
+
+using namespace std;
+
+Watch::Watch( )
+{
+   ticks_passed = clock( );
+}
+
+void Watch::start( )
+{
+   ticks_passed = clock( );
+}
+
+void Watch::stop( )
+{
+   ticks_passed = clock( ) - ticks_passed;
+   if (ticks_passed == clock_t(-1))
+   {
+      cout << "Clock overflow" << endl;
+      exit(1);
+   }
+}
+
+void Watch::delay(int duration)
+{
+   for (int i = 0; i < duration; ++i)
+   { };
+}
+
+double Watch::seconds( )
+{
+   return (double(ticks_passed) / CLOCKS_PER_SEC);
+}
+
+double Watch::minutes( )
+{
+   return (double(ticks_passed) / CLOCKS_PER_SEC / 60);
+}
+
+double Watch::hours( )
+{
+   return (double(ticks_passed) / CLOCKS_PER_SEC / 60 / 60);
+}
+]0;brookecantwell@storm:~/CISC2200/HW7[brookecantwell@storm HW7]$ cat driver.cpp
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #7
+ *
+ * 31 October 2016
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include "watch.h"
+
+using namespace std;
+
+void print_times(Watch, double&);
+void get_minimum_time(Watch, double&);
+
+main( )
+{
+   double min_time;
+
+   //FIRST TEST CASE
+   Watch stop_watch1;
+   stop_watch1.start( );
+   vector<int> v1;
+
+   for (int i = 0; i < 10000; ++i)
+      //push value of 1 to the vector 100000 times
+      v1.push_back(1);
+
+   stop_watch1.stop( );
+   cout << "Stop Watch #1:" << endl;
+   print_times(stop_watch1, min_time);
+
+
+   //SECOND TEST CASE
+   Watch stop_watch2;
+   stop_watch2.start( );
+   vector<int> v2;
+   vector<int>::iterator p = v2.begin( );
+
+   for (int i = 0; i < 10000; ++i)
+      //insert 1 at vector beginning 100000 times
+      p = v2.insert(p, 1);   
+
+   stop_watch2.stop( );
+   cout << "Stop Watch #2:" << endl;
+   print_times(stop_watch2, min_time);
+
+ 
+   //THIRD TEST CASE
+   Watch stop_watch3;
+   stop_watch3.start( );
+
+   //declare a vector of size 10000 initialized to 1
+   vector<int> v3(10000, 1);
+
+   stop_watch3.stop( );
+   cout << "Stop Watch #3:" << endl;
+   print_times(stop_watch3, min_time);
+
+   cout << "Shortest Time: " << min_time << " seconds." << endl;
+
+}
+
+void print_times(Watch stop_watch, double&min_time)
+{
+   cout << scientific << setprecision(3) << left;
+
+   cout << setw(10) << "Seconds: " << stop_watch.seconds( ) << endl;
+   cout << setw(10) << "Minutes: " << stop_watch.minutes( ) << endl;
+   cout << setw(10) << "Hours: " << stop_watch.hours( ) << endl << endl;
+
+   get_minimum_time(stop_watch, min_time);
+}
+
+void get_minimum_time(Watch stop_watch, double&min_time)
+{
+   static bool first = true;
+
+   //set original minimum time to the first stop watch seconds
+   if (first == true)
+   {
+      min_time = stop_watch.seconds( );
+      first = false;
+   }
+
+   if (stop_watch.seconds( ) < min_time)
+      min_time = stop_watch.seconds( );
+
+}
+]0;brookecantwell@storm:~/CISC2200/HW7[brookecantwell@storm HW7]$ g++ watch.cpp driver.cpp
+]0;brookecantwell@storm:~/CISC2200/HW7[brookecantwell@storm HW7]$ ./a.out
+Stop Watch #1:
+Seconds:  7.240e-04
+Minutes:  1.207e-05
+Hours:    2.011e-07
+
+Stop Watch #2:
+Seconds:  1.601e-02
+Minutes:  2.669e-04
+Hours:    4.448e-06
+
+Stop Watch #3:
+Seconds:  4.400e-05
+Minutes:  7.333e-07
+Hours:    1.222e-08
+
+Shortest Time: 4.400e-05 seconds.
+]0;brookecantwell@storm:~/CISC2200/HW7[brookecantwell@storm HW7]$ exit
+exit
+
+Script done on Mon 31 Oct 2016 03:07:48 PM EDT

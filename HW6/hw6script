@@ -1,0 +1,205 @@
+Script started on Wed 26 Oct 2016 06:34:03 PM EDT
+]0;brookecantwell@storm:~/CISC2200/HW6[brookecantwell@storm HW6]$ cat stack.h
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #6
+ *
+ */
+
+#ifndef STACK_H
+#define STACK_H
+
+#include <iostream>
+#include <iomanip>
+#include <stdio.h>
+
+//#define STACK_MAX = 10;
+
+class Stack
+{
+   public:
+      Stack( );
+      ~Stack( ) { }
+      int stack_size( );
+      bool is_empty( );
+      bool is_full( );
+      int top( );
+      int pop( );
+      int push(int stack_element);
+   private:
+      static const int STACK_MAX = 10;
+      int data[STACK_MAX];
+      int current_size;
+};
+
+#endif
+]0;brookecantwell@storm:~/CISC2200/HW6[brookecantwell@storm HW6]$ cat stack.cpp
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #6
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <stdio.h>
+#include "stack.h"
+
+using namespace std;
+
+Stack::Stack( )
+{
+   current_size = -1;
+}
+
+int Stack::stack_size( )
+{
+   return(current_size + 1);
+}
+
+bool Stack::is_empty( )
+{
+   if (current_size == -1)
+      return 1;
+   else
+      return 0;
+}
+
+bool Stack::is_full( )
+{
+   if (current_size == STACK_MAX)
+      return 1;
+   else
+      return 0;
+}
+
+int Stack::top( )
+{
+   return data[current_size];
+}
+
+int Stack::pop( )
+{
+   int stack_element;
+   if (!is_empty( ))
+   {
+      stack_element = data[current_size];
+      current_size = current_size - 1;
+      return stack_element;
+   }
+   else
+      printf("Could not return data. Stack is empty.\n");
+}
+
+int Stack::push(int stack_element)
+{
+   if (!is_full( ))
+   {
+      current_size = current_size + 1;
+      data[current_size] = stack_element;
+   }
+   else
+      printf("Could not insert data. Stack is full.\n");
+}
+]0;brookecantwell@storm:~/CISC2200/HW6[brookecantwell@storm HW6]$ cat driver.cpp
+/*
+ * Brooke Cantwell
+ *
+ * Data Structures
+ *
+ * Homework #6
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <stdio.h>
+#include "stack.h"
+
+unsigned int seed = (unsigned) time(0);
+
+double random(unsigned int&seed);
+
+using namespace std;
+
+main( )
+{
+   int local_data;
+   Stack s_1;
+  
+   cout << "s_1.is_empty( ) = " << s_1.is_empty( ) << endl;
+   cout << "s_1.stack_size( ) = " << s_1.stack_size( ) << endl;
+   cout << "local_data:" << endl;
+
+   for (int i = 0; i < 10; ++i)
+   {
+      local_data = int(10*random(seed));
+      cout << local_data << endl;
+      s_1.push(local_data);
+   }
+
+   printf("\nElement at the top of the stack is %d.\n", s_1.top( ));
+
+   printf("Stack elements are:\n");
+
+   while (!s_1.is_empty( ))
+   {
+      int local_data = s_1.pop( );
+      printf("%d\n", local_data);
+   }
+
+   printf("Stack full: %s\n", s_1.is_full( ) ? "true":"false");
+   printf("Stack empty: %s\n", s_1.is_empty( ) ? "true":"false");
+
+}
+
+double random(unsigned int&seed)
+{
+   const int MODULUS = 15748;
+   const int MULTIPLIER = 69069;
+   const int INCREMENT = 1;
+
+   seed = ((MULTIPLIER * seed) + INCREMENT) % MODULUS;
+
+   return double(seed) / double(MODULUS);
+}
+]0;brookecantwell@storm:~/CISC2200/HW6[brookecantwell@storm HW6]$ g++ stack.cpp driver.cpp
+]0;brookecantwell@storm:~/CISC2200/HW6[brookecantwell@storm HW6]$ ./a.out
+s_1.is_empty( ) = 1
+s_1.stack_size( ) = 0
+local_data:
+1
+8
+3
+7
+3
+2
+1
+8
+3
+7
+
+Element at the top of the stack is 7.
+Stack elements are:
+7
+3
+8
+1
+2
+3
+7
+3
+8
+1
+Stack full: false
+Stack empty: true
+]0;brookecantwell@storm:~/CISC2200/HW6[brookecantwell@storm HW6]$ exit
+exit
+
+Script done on Wed 26 Oct 2016 06:34:35 PM EDT
